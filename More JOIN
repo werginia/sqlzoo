@@ -85,26 +85,54 @@ WHERE id IN(SELECT movieid
 List the films where 'Harrison Ford' has appeared - but not in the starring role. [Note: the ord field of casting gives the position of the actor. 
 If ord=1 then this actor is in the starring role]
 */
-
+SELECT title 
+FROM movie
+WHERE id IN(SELECT movieid 
+            FROM actor 
+            JOIN casting ON(id = actorid)
+	    WHERE name LIKE 'Harrison Ford' AND ord <> 1);
 
 --#10
 /*
 List the films together with the leading star for all 1962 films.
 */
-
+SELECT title, name 
+FROM movie 
+JOIN casting ON(id = movieid)
+JOIN actor ON (actorid = actor.id)
+WHERE yr = 1962 AND ord = 1;
 
 --#11
 /*
 Which were the busiest years for 'John Travolta', 
 show the year and the number of movies he made each year for any year in which he made more than 2 movies.
 */
-
+SELECT yr,COUNT(title) 
+FROM movie 
+JOIN casting ON(movie.id=movieid)
+JOIN actor ON(actorid=actor.id)
+WHERE name = 'John Travolta'
+GROUP BY yr
+HAVING COUNT(title)=(SELECT MAX(c) 
+                     FROM (SELECT yr,COUNT(title) AS c 
+                     FROM movie 
+                     JOIN casting ON(movie.id=movieid)
+                     JOIN actor ON(actorid=actor.id)
+                     WHERE name = 'John Travolta'
+                     GROUP BY yr) AS t);
 
 --#12
 /*
 List the film title and the leading actor for all of the films 'Julie Andrews' played in.
 */
-
+SELECT title,name 
+FROM movie
+JOIN casting ON(movie.id=movieid)
+JOIN actor ON(actorid=actor.id)
+WHERE ord = 1 AND movieid IN(SELECT movieid 
+                             FROM casting
+                             JOIN actor ON(actor.id=actorid)
+                             WHERE name = 'Julie Andrews');
 
 --#13
 /*
