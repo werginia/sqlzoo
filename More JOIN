@@ -52,22 +52,33 @@ Use movieid=11768, (or whatever value you got from the previous question)
 */
 SELECT name
 FROM actor
-JOIN casting ON(actorid = id) AND movieid = (SELECT id 
-                                             FROM movie 
-                                             WHERE id = 11768);
+JOIN casting ON(actorid = id)
+WHERE movieid = (SELECT id 
+                 FROM movie 
+                 WHERE id = 11768);
 
 
 --#7
 /*
 Obtain the cast list for the film 'Alien'
 */
-
+SELECT name 
+FROM actor 
+JOIN casting ON(id = actorid) 
+WHERE movieid = (SELECT id 
+                 FROM movie
+	               WHERE title = 'Alien');
 
 --#8
 /*
 List the films in which 'Harrison Ford' has appeared
 */
-
+SELECT title 
+FROM movie
+WHERE id IN(SELECT movieid 
+            FROM actor 
+            JOIN casting ON(id = actorid)
+	          WHERE name = 'Harrison Ford');
 
 --#9
 /*
